@@ -1,11 +1,23 @@
 body {
+    margin: 0;
+    padding: 0;
     width: 400px;
     min-height: 600px;
     overflow-x: hidden;
     font-size: 11px;
 }
 
-h4, h4 > a {
+#wrapper {
+    position: relative;
+    padding: 5px 0 5px 5px;
+    margin: 5px 20px 5px 10px;
+}
+
+h4 {
+    margin-top: 0;
+}
+
+h4 > a {
     color: #444444;
 }
 
@@ -13,12 +25,24 @@ a {
     color: #008DFF;
 }
 
+#logo {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+}
+
+#logo img {
+    display: block;
+    width: 32px;
+    border: 1px #14D100 solid;
+}
+
 #news .news-date-time {
     color: #14D100 !important;
 }
 
 #news {
-    margin-right: 20px;
+    margin-top: 5px;
 }
 
 #news > div {

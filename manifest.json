@@ -7,7 +7,8 @@
     "description": "Показывает последние новости наукограда Кольцово.",
 
     "icons": {
-        "48": "icons/news_icon.jpg"
+        "16": "icons/kolcovo_logo_16_16.png",
+        "48": "icons/kolcovo_logo_48_48.png"
     },
 
     "permissions": [
@@ -16,7 +17,7 @@
 
     "browser_action": {
         "default_icon": {
-            "48": "icons/news_icon.jpg"
+            "16": "icons/kolcovo_logo_16_16.png"
         },
         "default_popup": "popup/news.html",
         "default_title": "Новости Кольцово"
