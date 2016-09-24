@@ -1,0 +1,25 @@
+{
+
+    "manifest_version": 2,
+    "name": "Новости Кольцово",
+    "version": "1.0",
+
+    "description": "Показывает последние новости наукограда Кольцово.",
+
+    "icons": {
+        "48": "icons/news_icon.jpg"
+    },
+
+    "permissions": [
+        "http://kolcovo.ru/*"
+    ],
+
+    "browser_action": {
+        "default_icon": {
+            "48": "icons/news_icon.jpg"
+        },
+        "default_popup": "popup/news.html",
+        "default_title": "Новости Кольцово"
+    }
+
+}
