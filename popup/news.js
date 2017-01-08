@@ -2,7 +2,17 @@ host = 'http://kolcovo.ru';
 hostNewsUrl = '/content/news/';
 
 function showMessage(text) {
-    $('#news').html('<p>'+ text +'</p>');
+    var newsContainerEl;
+
+    if (!window.newsContainer) {
+        document.write(text);
+    } else {
+        // TODO: Avoid using jQuery
+        newsContainerEl = window.newsContainer.get(0);
+    }
+
+    newsContainerEl.innerHTML = '';
+    newsContainerEl.appendChild(createElement('p', text));
 }
 
 function hidePopup(delay) {
@@ -25,7 +35,7 @@ function extractNews(html) {
     var newsHtml = html.match(regExps.allNews);
 
     if (!newsHtml) {
-        return showMessage('Новости не были найдены на странице.');
+        return false;
     }
 
     var news = [];
@@ -69,10 +79,34 @@ function extractNews(html) {
     return news;
 }
 
+/**
+ * Helper create node with text.
+ *
+ * @param tagName
+ * @param text
+ * @returns {Element}
+ */
+function createElement(tagName, text) {
+    var node = document.createElement(tagName);
+
+    if (text && text.length) {
+        var textNode = document.createTextNode(text);
+        node.appendChild(textNode);
+    }
+
+    return node;
+}
+
 function renderNewsTo(responseText, newsContainer) {
     newsContainer.empty();
+    var newsContainerEl = newsContainer.get(0);
 
     var news = extractNews(responseText);
+
+    if (!news) {
+        return showMessage('Новости не были найдены на странице.');
+    }
+
     var prevDate;
     var today = new Date();
     var noNewsForToday = news[0].publishedAt.match(/^\d+/) != today.getDate();
@@ -80,7 +114,8 @@ function renderNewsTo(responseText, newsContainer) {
     var noNewsText = 'Нет новостей';
 
     if (noNewsForToday) {
-        newsContainer.append($('<h4>' + todayText + '</h4><div>'+ noNewsText +'</div>'));
+        newsContainerEl.appendChild(createElement('h4', todayText));
+        newsContainerEl.appendChild(createElement('div', noNewsText));
     }
 
     for (var i = 0; i < news.length; i++) {
@@ -90,39 +125,56 @@ function renderNewsTo(responseText, newsContainer) {
         // Group news by date
         if (date[0] !== prevDate) {
             showDate = date[1] == today.getDate() ? todayText : date[0];
-            newsContainer.append($('<h4>' + showDate + '</h4>'));
+            newsContainerEl.appendChild(createElement('h4', showDate));
             prevDate = date[0];
         }
 
+        var itemDiv = createElement('div');
+
         // Create div with background image
-        var image = '';
         if (news[i].pictureUrl) {
-            image = '<div class="image" style="background-image: url('+ news[i].pictureUrl +');"></div> ';
+            var image;
+
+            image = createElement('div');
+            image.className = 'image';
+            image.style.backgroundImage = 'url('+ news[i].pictureUrl +')';
+
+            itemDiv.appendChild(image);
         }
 
-        newsContainer.append($(
-            '<div>' +
-                image +
-                '<span class="news-date-time">'+ news[i].publishedAt +'</span><br>' +
-                (
-                    news[i].url ?
-                    '<a class="title" href="'+ news[i].url +'">' + news[i].title + '</a>' :
-                    '<span class="title">'+  news[i].title +'</span>'
-                ) +
-            '</div>'
-        ));
+        // Create date element
+        var dateEl = createElement('span', news[i].publishedAt);
+        dateEl.className = 'news-date-time';
+        itemDiv.appendChild(dateEl);
+        itemDiv.appendChild(createElement('br'));
+
+        // Create title
+        var title;
+        if (news[i].url) {
+            title = createElement('a', news[i].title);
+            title.className = 'title';
+            title.href = news[i].url;
+        } else {
+            title = createElement('span', news[i].title);
+        }
+
+        itemDiv.appendChild(title);
+
+        newsContainerEl.appendChild(itemDiv);
     }
 
+    // TODO: Avoid using jQuery
     newsContainer.find('a').each(function () {
         $(this).attr('target', '_blank');
     });
 }
 
-function showNews() {
+function showNews(newsContainer) {
     $
         .get(host + hostNewsUrl, function (data) {
-            renderNewsTo(data, $('#news'));
+            renderNewsTo(data, newsContainer);
 
+            // TODO: Avoid using jQuery
             $('a').click(function () {
                 hidePopup();
             });
@@ -137,5 +189,8 @@ function showNews() {
 
 
 $(function () {
-    showNews();
+    // TODO: Avoid using jQuery
+    window.newsContainer = $('#news');
+
+    showNews(window.newsContainer);
 });
